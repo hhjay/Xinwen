@@ -15,16 +15,16 @@
 			</div>
 			<div class="head-contain-login">
 				<ul>
-					<li class="active" href="login">账号登录</li>
-					<li href="register">新增管理员</li>
+					<li href="login">账号登录</li>
+					<li class="active" href="register">新增管理员</li>
 				</ul>
 				<div class="head-login-tab">
-					<div class="head-tab active" id="login">
+					<div class="head-tab" id="login">
 						<!-- action="<?php echo base_url(); ?>login.php/loginDeal" -->
 						<form  method="post" name="loginForm">
 							<div class="login-input">
 								<span></span>
-								<input type="text" name="adminUsername" id="adminUsername" placeholder="邮箱/手机号/账号" required />
+								<input type="text" name="adminUsername" id="adminUsername" placeholder="手机号/账号" required />
 							</div>
 							<div class="login-input">
 								<span class="password-icon"></span>
@@ -32,7 +32,7 @@
 							</div>
 							<div class="login-accept">
 								<div class="img-check">
-									<img src="<?php echo site_url('/login/imgShow') ?>" onClick="this.src='<?php echo site_url('/login/imgShow?nocache=') ?>'+ Math.random()" />
+									<img src="<?php echo site_url('/login/imgLoginShow') ?>" onClick="this.src='<?php echo site_url('/login/imgLoginShow?nocache=') ?>'+ Math.random()" />
 								</div>
 								<input type="text" name="imgCheckStr" id="imgCheckStr" class="img-input" placeholder="验证码" required />
 							</div>
@@ -43,7 +43,7 @@
 						</form>
 					</div>
 					<!-- action="<?php echo base_url(); ?>login.php/registerDeal" -->
-					<div class="head-tab" id="register">
+					<div class="head-tab active" id="register">
 						<form method="post" name="registerForm">
 							<div class="login-input">
 								<span></span>
@@ -51,7 +51,7 @@
 							</div>
 							<div class="login-input">
 								<span></span>
-								<input type="text" name="registerAccount" id="registerAccount" placeholder="输入你想要注册的账号/邮箱/手机号" required />
+								<input type="text" name="registerAccount" id="registerAccount" placeholder="输入你想要注册的账号/手机号" required />
 							</div>
 							<div class="login-input">
 								<span class="password-icon"></span>
@@ -59,9 +59,9 @@
 							</div>
 							<div class="login-accept reg-accept">
 								<div class="img-check">
-									<img src="<?php base_url() ?>index.php/login/imgShow" />
+									<img src="<?php echo site_url('/login/imgRegisterShow') ?>" onClick="this.src='<?php echo site_url('/login/imgRegisterShow?nocache=') ?>'+ Math.random()" />
 								</div>
-								<input type="text" name="imgCheckStr" id="imgCheckStr" class="img-input" placeholder="验证码" required />
+								<input type="text" name="registerImgStr" id="registerImgStr" class="img-input" placeholder="验证码" required />
 							</div>
 							<!-- margin-top-20px -->
 							<div class="login-input">

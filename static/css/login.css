@@ -56,6 +56,7 @@
 	width: 100%;height: 40px;
 	margin-top: 10px;border-radius: 2px;
 	background: #fff;
+	border: 1px solid #fff;
 }
 .login-accept{
 	width: 100%;height: 40px;
@@ -100,6 +101,9 @@
 .img-input{
 	width: 200px;height: 30px;
 	float: left;
+}
+.input-active{
+	border: 1px solid #fa7d3c;
 }
 .margin-top-20px{
 	margin-top: 20px;

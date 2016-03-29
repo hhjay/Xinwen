@@ -8,20 +8,36 @@ class Login extends CI_Controller {
         $this ->load ->helper('url');
         $this ->load ->model('m_login');
         $this ->load ->library('session');
-        $this ->load ->library('encryption');
-        // $this ->config ->load('config');
     }
 	public function index(){
 		$data = array(
 			"jsData" =>array()
 		);
+		// // 登录验证所用的session
+		// $loginSession = array(
+		// 	// "userId" =>
+		// 	"loginImgStr" =>
+		// 	"registerImgStr" =>
+		// );
+
+
 		$this ->load ->view('header');
 		$this ->load ->view('v_login', $data);
 		$this ->load ->view('footer');
 	}
-	// 生成随机数字和字母的图片
-	public function imgShow(){
+	// 登录时候的验证图片显示
+	public function imgLoginShow(){
 		$imgStrTemp = $this ->loginImgStrRes(4);
+		$this->session->set_userdata("loginImgStr", $imgStrTemp);
+		$data = array(
+			'imgStr' => $imgStrTemp
+		);
+		$this ->load ->view('v_img', $data);
+	}
+	// 注册时候的验证图片显示
+	public function imgRegisterShow(){
+		$imgStrTemp = $this ->loginImgStrRes(4);
+		$this->session->set_userdata("registerImgStr", $imgStrTemp);
 		$data = array(
 			'imgStr' => $imgStrTemp
 		);
@@ -53,88 +69,60 @@ class Login extends CI_Controller {
 			return false;
 		}
 	}
-	// 将输入的(已加密)字符解密
-	public function fnAESdecrypte(){
-		$this ->config ->load('config');
-		$ajaxData = $_POST;
+	
+	/* 将输入的(已加密)字符解密
+	 * @parm $encrypted已加密的字符串
+	 */
+	public function fnAESdecrypte($encrypted){
 		$privateKey = "1234567812345678";
-		$iv     = "1234567812345678";
-		
+		$iv         = "1234567812345678";
 		//解密
-		$encryptedData = base64_decode($ajaxData["username"]);
+		$encryptedData = base64_decode( $encrypted );
 		$decrypted = mcrypt_decrypt(MCRYPT_RIJNDAEL_128, $privateKey, $encryptedData, MCRYPT_MODE_CBC, $iv);
-		// echo trim($decrypted);
-		
-		
+		// 清除空白字符串 很重要
+		$res = preg_replace('/\s(?=)/', '', $decrypted);
+		return $res;
 	}
 
-	// public function keyRandom(){
-	// 	$key = $this ->loginImgStrRes(18);
-	// 	$this ->config ->set_item('hhj_pub_key', $imgStr);
-	// 	if ($_SERVER['REQUEST_METHOD'] == 'POST'){
-	// 		echo $this ->config ->item('hhj_pub_key');
-	// 	}else{
-	// 		return $this ->config ->item('hhj_pub_key');
-	// 	}
-	// }
-	// 生成公钥
-	// public function publicKey(){
-	// 	$resTemp = $this ->resKey();
-	//     $public_key = openssl_pkey_get_details($resTemp["res"]);
- 	//    	$public_key = $public_key["key"];
- 	//    	echo $public_key;
-	// }
-	// // 从.cnf中获取相应的key
-	// public function resKey(){
-	// 	ini_set('display_errors', 1);
- 	//    	header("Content-type: text/html; charset=utf-8");
-	//     $config = array(
-	//         "config" => "D:\wamp\bin\apache\apache2.4.9\conf\openssl.cnf",
-	//         "private_key_bits" => 2048,
-	//         "private_key_type" => OPENSSL_KEYTYPE_RSA,
-	//     );
-	//     $res = openssl_pkey_new($config);// 创建公钥和私钥
-	//     if ($res === false) die('创建公钥和私钥失败。'."\n");
+	/* 添加用户
+	 * @parm $_POST 注册按钮的ajax响应事件
+	 * return (100/101->图片验证失败, 300->用户名存在, 200->注册成功)
+	 */
+	public function addRegister(){
+		$ajaxData = $_POST;
+		$registerImg = $this ->fnAESdecrypte( $ajaxData["registerImgStr"] );//接收传过来的图片验证码
+		$sessionImg = $this ->session ->userdata('registerImgStr');//保存在session里面的验证码
+		
+		if ( empty($registerImg) ) {
+			echo "100";
+		}else{
+			$flag = strcmp($registerImg, trim($sessionImg));
+			if ( $flag == 0 ) {
+				$u_name = $this ->security ->xss_clean( $ajaxData["userName"] );
+				$u_account = $this ->security ->xss_clean( $ajaxData["userAccount"] );
+				$u_password = $this ->fnAESdecrypte( $ajaxData["userPassword"] );
+				$u_time = time();
 
-	//     $returnData = array(
-	//     	"res"    =>$res,
-	//     	"config" =>$config
-	//     );
-	//     return $returnData;
-	// }
+				$user = array(
+					"u_name"    =>$u_name,
+					"u_account" =>$u_account,
+					"u_password"=>$u_password,
+					"u_time"    =>$u_time
+				);
+				// 判断用户名(账号名)是否重复
+				$now_user = $this ->m_login ->nowRepeatUser( $user["u_account"] );
+				if( $now_user ){
+					echo "300";//该用户已存在
+				}else{
+					$this ->m_login ->addAdminUser($user);
+					echo "200";
+                	$this ->load ->view("v_RegisterSuccess.php");
+				}
+			}else{
+				echo "101";
+			}
+		}
 
-	// 生成私钥
-	// public function hhjApachePrivateKey(){
-	// 	$resTemp = $this ->resKey();
-	//     if (!openssl_pkey_export($resTemp["res"], $private_key, "phrase", $resTemp["config"])) die('私钥检索失败.'."\n");
-	//     openssl_pkey_export($resTemp["res"], $private_key, "phrase", $resTemp["config"]);
-	// 	return $private_key;
-	// }
-	// encodeJSEncrypt
-	// public function loginEncode(){
-	// 	// 接收客户端发送过来的经过加密的登录信息
-	// 	// $input = $_POST;
-	// 	$input = $_GET;
-	// 	var_dump($input);
-	// 	// 私钥是放在服务器端的，用以验证和解密客户端经过公钥加密后的信息
-	// 	$private_key = $this ->hhjApachePrivateKey();
-	// 	// 公钥一般存放在登录页面中的一个隐藏域中，但是请注意：公钥和私钥一定要配对，且必须保证私钥的安全
-	// 	// $public_key = $this ->publicKey();
-	// 	/**
-	// 	 * 使用PHP OpenSSL时，最好先看看手册，了解如何开启OpenSSL 和 其中的一些方法的使用
-	// 	 *  具体如何使用这里不做赘述，大家去看看PHP手册，什么都就解决了
-	// 	 */
-	// 	// $pu_key = openssl_pkey_get_public($public_key);// 判断公钥是否是可用的
-	// 	// $pi_key =  openssl_pkey_get_private($private_key, "phrase");// 判断私钥是否是可用的，可用返回资源id Resource id 
-	// 	$pi_key = openssl_get_privatekey($private_key, "phrase");
-	// 	// $decrypted = "";  
-	// 	// if ( ! ) die("数据解密失败！");//私钥解密 
-	// 	// echo $input['username'];
-	// 	openssl_private_decrypt(base64_decode($input['username']), $decrypted, $pi_key);
-	// 	var_dump( openssl_private_decrypt($input['username'], $decrypted, $pi_key) );
-	// 	// 这里的这个 $decrypted就是解密客户端发送过来的用户名，至于后续连接数据库验证登录信息的代码，这里也就省略了
-	// 	var_dump( json_encode( $decrypted ) );
-	// 	// return json_encode( $decrypted );
-	// }
-
+		
+	}
 }
