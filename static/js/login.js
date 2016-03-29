@@ -1,15 +1,6 @@
 /*
  *登录页面的tab 事件
  */
-// require.config({
-// 	baseUrl: "./static/js/",
-// 	paths: {
-//         'require-js': 'aes'
-//     }
-// });
-// require( ["aes"],function(CryptoJS) {
-
-
 jQuery(document).ready(function($) {
 
 	$(".head-contain-login li").click(function(event) {
@@ -24,29 +15,25 @@ jQuery(document).ready(function($) {
 		$(id_str).addClass('active');
 	});
 
-
-// login点击事件
-	function fnEncrypt(data, key, iv) {
-  	 	return CryptoJS.AES.encrypt(data, key, {iv: iv}).toString();
-	}
+    function fnEncrypt(data, key, iv) {
+        return CryptoJS.AES.encrypt(data, key, {iv: iv}).toString();
+    }
 	$("#loginBtn").click(function(event) {
-		// var formFlag = false;
-		var data = [];
+		var formFlag = false,
+		    data     = [];
+
         data['username']= $.trim( $("#adminUsername").val() );
         data['passwd']= $.trim( $("#adminPassword").val() );
- 		var pkey = "";
  		
- 		var key = CryptoJS.enc.Utf8.parse('1234567812345678');//CryptoJS.enc.Hex.parse
-    	var iv  = CryptoJS.enc.Utf8.parse('1234567812345678');//CryptoJS.enc.Utf8.parse
+        var time = new Date();
+        var utcTime = parseInt( time.getTime() / 1000 ),
+            rand    = Math.random();
 
-    	// var encrypted = CryptoJS.AES.encrypt("Message", key, { iv: iv });
-    	console.log( data['username'] );
+        var key = CryptoJS.enc.Utf8.parse( "1234567812345678" );
+        var iv  = CryptoJS.enc.Utf8.parse('1234567812345678');
     	var encrypted = fnEncrypt(data['username'], key, iv);
-    	console.log( encrypted );
-
-    	
         $.ajax({
-        	url: base_url+"index.php/login/fnAESdecrypte",
+        	url: base_url + "index.php/login/fnAESdecrypte",
         	type: 'POST',
         	dataType: 'text',
         	data: {username: encrypted},
@@ -59,11 +46,39 @@ jQuery(document).ready(function($) {
         });
 	});
 
+    // 注册的
+    $("#registerBtn").click(function(event) {
+        var formFlag = false;
+        var username = $("#registerUsername").val(),
+            Account  = $("#registerAccount").val(),
+            password = $("#registerPassword").val(),
+            imgStr   = $("#imgCheckStr").val();
+        var regExp = new RegExp(/^\s*$/);
+        if ( regExp.test(username) ) {
+            console.log("sss");
+        };
+        // 我们会帮你清除空格 所以请注意你输入的字符中有没有空格
+        // $ajax = preg_replace('/\s(?=)/', '', $ajax);// 清除空白
+
+        // if ( username == ) {};
+    });
+
+    // 通过form来判断表单是否合法
+    function checkInput(formName) {
+        var formFlag = false;
+        var form = $("form");// 所有的(form)表单
+        var _thisForm;
+        for (var i = 0; i < form.length; i++) {
+            if ( $("form:eq("+i+")").attr("name") == formName ) {
+                _thisForm = form[i];
+                break;
+            };
+        };
+        // console.log( $(_thisForm).find("input") );
+        if ( $(_thisForm).find("input").val() == "" ) {
+            console.log("sss");
+        };
+    }
+    checkInput("registerForm");
 
 });
-
-
-// jQuery(document).ready(function($) {
-	
-	
-// });

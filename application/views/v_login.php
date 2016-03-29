@@ -1,22 +1,9 @@
-<script type="text/javascript" src="<?php echo base_url(); ?>static/js/jquery-1.12.2.js"></script>
-<script src="http://crypto-js.googlecode.com/svn/tags/3.1/build/rollups/aes.js"></script>
-<script>
-   
-</script>
-
-
+<script type="text/javascript" src="<?php echo base_url(); ?>static/js/lib/jquery-1.12.2.js"></script>
+<script type="text/javascript" src="<?php echo base_url(); ?>static/js/lib/crypto-js.aes.3.1.js"></script>
 
 <script type="text/javascript" src="<?php echo base_url(); ?>static/js/login.js"></script>
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>static/css/login.css" />
 <div class="head-bg">
-
-<!-- 
-<script type="text/javascript" src="http://requirejs.org/docs/release/2.1.11/comments/require.js"></script>
-
-<script type="text/javascript" src="<?php echo base_url(); ?>static/js/crypto-js.js"></script>
-
-
- -->
 	<div class="head-main">
 		<div class="head-main-logo">logo</div>
 		<div class="head-main-contain">
@@ -34,7 +21,7 @@
 				<div class="head-login-tab">
 					<div class="head-tab active" id="login">
 						<!-- action="<?php echo base_url(); ?>login.php/loginDeal" -->
-						<form  method="post">
+						<form  method="post" name="loginForm">
 							<div class="login-input">
 								<span></span>
 								<input type="text" name="adminUsername" id="adminUsername" placeholder="邮箱/手机号/账号" required />
@@ -51,19 +38,20 @@
 							</div>
 							<!-- margin-top-20px -->
 							<div class="login-input">
-								<input type="button" class="btn-submit" id="loginBtn" value="登录" />
+								<button class="btn-submit" id="loginBtn">登录</button>
 							</div>
 						</form>
 					</div>
+					<!-- action="<?php echo base_url(); ?>login.php/registerDeal" -->
 					<div class="head-tab" id="register">
-						<form action="<?php echo base_url(); ?>login.php/registerDeal" method="post">
+						<form method="post" name="registerForm">
 							<div class="login-input">
 								<span></span>
 								<input type="text" name="registerUsername" id="registerUsername" placeholder="姓名" required />
 							</div>
 							<div class="login-input">
 								<span></span>
-								<input type="text" name="registerUsername" id="registerUsername" placeholder="输入你想要注册的账号/邮箱/手机号" required />
+								<input type="text" name="registerAccount" id="registerAccount" placeholder="输入你想要注册的账号/邮箱/手机号" required />
 							</div>
 							<div class="login-input">
 								<span class="password-icon"></span>
@@ -77,7 +65,7 @@
 							</div>
 							<!-- margin-top-20px -->
 							<div class="login-input">
-								<input type="submit" class="btn-submit" nama="sub" value="新增管理员" />
+								<button class="btn-submit" id="registerBtn" nama="sub">新增管理员</button>
 							</div>
 						</form>
 					</div>

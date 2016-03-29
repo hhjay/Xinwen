@@ -7,3 +7,5 @@
 > * http://my.oschina.net/Jacker/blog/86383
 > * AES的QuickStartGuide.wiki
 > * 总得来说，英语很重要啊。加油
+### 2016-3-29
+> * 下午完成用户注册登录。阻止表单默认的刷新
