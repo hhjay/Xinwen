@@ -25,11 +25,9 @@
 }
 .btn-submit{
 	width: 40px;height: 32px;
-	position: absolute;
-	top: 9px; right: -5px;
-	background: #999;
-    border: none;
-    font-family: Arial;
+	position: absolute;top: 9px; right: -5px;
+	background: #999;border: none;
+    font-family: Arial;font-size: 23px;color: #fff;
     border-top-right-radius: 4px;
     border-bottom-right-radius: 4px;
     box-shadow: 0 1px 2px rgba(0,0,0,.05),inset 0 1px 1px rgba(255,255,255,.15);
@@ -85,7 +83,7 @@
 }
 .self-tab-main{
 	min-width: 120px;height: 90px;
-	background: #e5e5e5;
+	background: #e5e5e5;position: absolute;
 }
 .self-tab-main li{
 	width: 100%;height: 30px;
@@ -115,11 +113,48 @@
 .manage-contain-left{
 	width: 750px;
 }
-.manage-contain-right{
-	width: 270px;
-}
 .contain-self-message{
 	width: 714px;height: 300px;
 	padding: 12px 18px;
-	border: 1px solid #ddd;
+	border: 1px solid #ddd;border-radius: 3px;
+	color: #666;
+}
+.contain-self-message h2{ color: #000;margin: 10px 0 10px; }
+.contain-self-message h2 span{ color: #666; }
+.contain-self-headImg{
+	width: 110px;height: 110px;
+	border: 1px solid #fcfcfc;
+}
+.contain-self-headImg img{ width: 100%;height: 100%; }
+.contain-self-main{
+	margin-left: 15px;font-size: 14px;
+}
+.contain-main-item{
+	width: 100%;margin: 10px 0;
+	font-size: 16px;
+}
+.item-first{
+	margin-top: 0;
+}
+.contain-main-item span{
+	padding: 0 8px;
+}
+.contain-main-item span i{
+	padding: 0 4px;
+}
+.boder-right{
+	border-right: 1px solid #ddd;
+}
+.clear-fix{
+	clear: both;
+}
+.contain-nav{
+	width: 100%;height: 30px;
+}
+
+
+
+.manage-contain-right{
+	width: 210px;
+	border-top: 1px solid #ddd;
 }
