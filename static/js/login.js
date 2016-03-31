@@ -1,8 +1,7 @@
 /*
- *登录页面的tab 事件
+ *登录页面的js
  */
-jQuery(document).ready(function($) {
-
+$(document).ready(function() {
     /*
      * 登录和注册的tab点击事件
      */
@@ -29,34 +28,60 @@ jQuery(document).ready(function($) {
     }
     // 登录的
 	$("#loginBtn").click(function(event) {
-		var formFlag = false,
-		    data     = [];
-
-        data['username']= $.trim( $("#adminUsername").val() );
-        data['passwd']= $.trim( $("#adminPassword").val() );
- 		
-        var time = new Date();
-        var utcTime = parseInt( time.getTime() / 1000 ),
-            rand    = Math.random();
-
+        event.preventDefault();
+        var formFlag = false;
+        var adminUsername = $("#adminUsername").val(),
+            adminPassword  = $("#adminPassword").val(),
+            imgCheckStr = $("#imgCheckStr").val();
+        
+        formFlag = fnCheckInputIsNot(adminUsername, "adminUsername", 0);
+        if ( formFlag ) {
+            formFlag = fnCheckInputIsNot(adminPassword, "adminPassword", 1);
+            if ( formFlag ) {
+                formFlag = fnCheckInputIsNot(imgCheckStr, "imgCheckStr", 2);
+            };
+        };
         var key = CryptoJS.enc.Utf8.parse( "1234567812345678" );
         var iv  = CryptoJS.enc.Utf8.parse('1234567812345678');
-    	var encrypted = fnEncrypt(data['username'], key, iv);
-        $.ajax({
-        	url: base_url + "index.php/login/fnAESdecrypte",
-        	type: 'POST',
-        	dataType: 'text',
-        	data: {username: encrypted},
-        	success: function(res) {
-        		console.log( res );
-        	},
-        	error: function(err) {
-        		console.error(err);
-        	}
-        });
+        var data = {};
+        data = {
+            "userName": adminUsername,
+            "userPassword": fnEncrypt(adminPassword, key, iv),
+            "imgCheckStr": fnEncrypt(imgCheckStr, key, iv)
+        };
+        if ( formFlag ) {
+            $.ajax({
+                url: base_url + "index.php/login/adminLogin",
+                type: 'POST',
+                dataType: 'text',
+                data: data,
+                success: function(res) {
+                    if ( res == "100" || res == "101" ) {
+                        alert("图片验证失败！");
+                        var img = $("#imgCheckStr").parent().find("img");
+                        img.attr("src", base_url + "index.php/login/imgLoginShow?nocache="+Math.random() );
+                        $("#imgCheckStr").focus();
+                    }else if ( res == "300" ) {
+                        alert("查无此账号。");
+                        $("#userName").focus();
+                    }else if( res == "303"){
+                        alert("密码错误！");
+                        $("#userPassword").focus();
+                    }else if( res == "404"){
+                        alert("404 not found！");
+                        window.location = "./";
+                    }else{// 200 登录成功
+                        window.location = "./";
+                    }
+                },
+                error: function(err) {
+                    console.error(err);
+                }
+            });
+        };
 	});
     
-    // 获得焦点
+    // input获得焦点
     $("input").focus(function() {
         if ( $(this).attr("class") == "img-input" ) {
             $(this).addClass('input-active');
@@ -65,7 +90,7 @@ jQuery(document).ready(function($) {
         }
     });
     
-    // 失去焦点
+    // input失去焦点
     $("input").blur(function() {
         $("input").parent().removeClass('input-active');
         $("input").removeClass('input-active');
@@ -93,33 +118,41 @@ jQuery(document).ready(function($) {
         var key = CryptoJS.enc.Utf8.parse( "1234567812345678" );
         var iv  = CryptoJS.enc.Utf8.parse('1234567812345678');
         var data = {};
-        var encrypted = fnEncrypt(data['username'], key, iv);
         data = {
             "userName": registerUsername,
             "userAccount": registerAccount,
             "userPassword": fnEncrypt(registerPassword, key, iv),
             "registerImgStr": fnEncrypt(registerImgStr, key, iv),
         };
+        if ( formFlag ) {
+            $.ajax({
+                url: base_url + "index.php/login/addRegister",
+                type: 'POST',
+                dataType: 'text',
+                data: data,
+                success: function(res) {
+                    if ( res == "100" || res == "101" ) {
+                        alert("图片验证失败！");
+                        // 改变验证图片
+                        var img = $("#registerImgStr").parent().find("img");
+                        img.attr("src", base_url + "index.php/login/imgRegisterShow?nocache="+Math.random() );
 
-        $.ajax({
-            url: base_url + "index.php/login/addRegister",
-            type: 'POST',
-            dataType: 'text',
-            data: data,
-            success: function(res) {
-                console.log( res );
-                if ( res == "100" || res == "101" ) {
-                    alert("图片验证失败！");
-                }else if ( res == "300" ) {
-                    alert("改账号名已存在,请注意姓名和账号名的区别！");
-                }else{
-                    window.location = "./";
+                        $("#registerImgStr").focus();
+                    }else if ( res == "300" ) {
+                        alert("改账号名已存在,请注意姓名和账号名的区别！");
+                        $("#userAccount").focus();
+                    }else if( res == "404"){
+                        alert("404 not found！");
+                        window.location = "./";
+                    }else{
+                        window.location = "./";
+                    }
+                },
+                error: function(err) {
+                    console.error(err);
                 }
-            },
-            error: function(err) {
-                console.error(err);
-            }
-        });
+            });
+        };
     });
 
     /* 判断是否合法
