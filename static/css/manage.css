@@ -115,3 +115,11 @@
 .manage-contain-left{
 	width: 750px;
 }
+.manage-contain-right{
+	width: 270px;
+}
+.contain-self-message{
+	width: 714px;height: 300px;
+	padding: 12px 18px;
+	border: 1px solid #ddd;
+}
