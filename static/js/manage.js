@@ -12,4 +12,15 @@ $(document).ready(function() {
 		$(this).addClass('hide');
 	});
 
+	// 信息修改 显示修改按钮与否
+	$(".contain-main-item").hover(function() {
+		$(this).children('a').removeClass('hide');
+	}, function() {
+		$(this).children('a').addClass('hide');
+	});
+
+	// 
+	$("#newsNewBtn").click(function(event) {
+		console.log( $(this) );
+	});
 });

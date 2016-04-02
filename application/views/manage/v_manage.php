@@ -40,7 +40,7 @@
 			</div>
 		</div>
 		<!-- 编辑新的新闻 -->
-		<div class="manage-new pull-right"><button>编&nbsp;辑</button></div>
+		<div class="manage-new pull-right"><button id="newsNewBtn">编&nbsp;辑</button></div>
 	</div>
 </div>
 <div class="manage-contain">
@@ -57,36 +57,40 @@
 					<span class="boder-right"><i class="fa fa-map-marker"></i>云南省</span>
 					<span class="boder-right">计算机软件行业</span>
 					<span><i class="fa fa-mars"><!-- 男 --></i><!-- <i class="fa fa-venus">女</i> --></span>
+					<a href="javascript:;" class="edit-btn hide"><i class="fa fa-edit"></i><span>修改</span></a>
 				</div>
 				<div class="contain-main-item">
 					<span class="boder-right"><i class="fa fa-building"></i>百度</span>
 					<span>java高级工程师</span>
+					<a href="javascript:;" class="edit-btn hide"><i class="fa fa-edit"></i><span>修改</span></a>
 				</div>
 				<div class="contain-main-item">
 					<span class="boder-right"><i class="fa fa-mortar-board"></i>中南民族大学</span>
 					<span>文学与新闻传播</span>
+					<a href="javascript:;" class="edit-btn hide"><i class="fa fa-edit"></i><span>修改</span></a>
 				</div>
 				<div class="contain-main-item">
 					<span><i class="fa fa-hand-o-right"></i>你还想说点什么</span>
 				</div>
 			</div>
-
-			<div class="clear-fix"><!-- 清除浮动 --></div>
-			<!-- 点击可以查看下面的具体内容 -->
-			<div class="contain-nav">
-				<ul>
-					<li>所有</li>
-					<li>发布<!-- 自己发布的新闻 --></li>
-					<li>评论<!-- 自己评论的新闻 --></li>
-					<li>收藏<!-- 自己评论的收藏 --></li>
-				</ul>
-			</div>
 		</div>
+		<div class="clear-fix"><!-- 清除浮动 --></div>
+		<!-- 点击可以查看下面的具体内容 -->
+		<div class="contain-nav pull-left">
+			<ul>
+				<a href=""><li class="active"><i class="fa fa-home"></i></li></a>
+				<a href=""><li>发布<span>&nbsp;0</span><!-- 自己发布的新闻 --></li></a>
+				<a href=""><li>评论<span>&nbsp;0</span><!-- 自己评论的新闻 --></li></a>
+				<a href=""><li>收藏<span>&nbsp;0</span><!-- 自己评论的收藏 --></li></a>
+			</ul>
+		</div>
+
+		<div class="clear-fix"><!-- 清除浮动 --></div>
 		<div class="news-contain">
-			<h3>发布的新闻</h3>
+			<h3>发布的新闻 <a href=""><i class="fa fa-chevron-right pull-right"></i></a></h3>
 			<div class="news-contain-main">
 				<div class="news-contain-comment">
-					<span>0</span>
+					<b>0</b><br/>
 					<span>评论</span>
 				</div>
 				<div class="news-contaiin-title">
@@ -98,18 +102,29 @@
 		<div class="news-contain">
 			<h3>被评论的新闻</h3>
 			<div class="news-contain-main">
-				<div class="news-contain-comment">xx评论了该新闻</div>
-				<div class="news-contaiin-title">
-					<a href="">这是新闻标题</a>
-					<p>新闻前200字...</p>
+				<div class="news-contain-who">
+					<span>xx评论了该新闻</span>
+					<span class="pull-right">5天前</span>
 				</div>
-				<div class="new-comment-time">这是评论新闻的时间(5天前)</div>
+				<div class="news-contaiin-title margin-left">
+					<a href="">这是新闻标题</a>
+				</div>
+				<div class="hr-border"></div>
+			</div>
+			<div class="news-contain-main no-border-top">
+				<div class="news-contain-who">
+					<span>xx评论了该新闻</span>
+					<span class="pull-right">5天前</span>
+				</div>
+				<div class="news-contaiin-title margin-left">
+					<a href="">这是新闻标题</a>
+				</div>
 			</div>
 		</div>
 		<div class="news-contain">
 			<h3>你自己收藏的新闻</h3>
 			<div class="news-contain-main">
-				<div class="news-contaiin-title">
+				<div class="news-contaiin-title margin-left">
 					<a href="">这是新闻标题</a>
 					<p>新闻前200字...</p>
 				</div>
@@ -117,16 +132,35 @@
 		</div>
 	</div>
 	<div class="manage-contain-right pull-right">
-		<!-- 你收藏别人的表签 -->
-		<div class="news-label-keep">
-			<span>收藏了</span>
-			<span>多少标签</span>
+		<div class="new-label">
+			<!-- 你收藏别人的表签 -->
+			<div class="news-label-keep pull-left">
+				<span>收藏了</span><br/>
+				<b>8</b><span>个</span><br/>
+				<span>标签</span>
+			</div>
+			<!-- 别人收藏了多少你的标签 -->
+			<div class="news-label-keep pull-right news-lebal-left-border">
+				<span>收藏了</span><br/>
+				<b>9</b><span>个</span><br/>
+				<span>标签</span>
+			</div>
 		</div>
-		<!-- 别人收藏了多少你的标签 -->
-		<div class="news-label-keep">
-			<span>收藏了</span>
-			<span>多少标签</span>
+		<div class="footer-copyright">
+			<ul>
+				<li><a href="">中南民族大学</a></li>
+				<li><a href="">黄会杰</a></li>
+				<li><a href="">建议反馈</a></li>
+				<li><a href="">商务合作&copy;2016新闻</a></li>
+			</ul>
 		</div>
+	</div>
+</div>
+
+<div class="ask-news-edit">
+	<div class="bg-opacity"></div>
+	<div class="edit-news-main">
+	
 	</div>
 </div>
 <script type="text/javascript" src="<?php echo base_url(); ?>static/js/lib/jquery-1.12.2.js"></script>
