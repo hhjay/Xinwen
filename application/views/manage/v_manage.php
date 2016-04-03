@@ -157,10 +157,41 @@
 	</div>
 </div>
 
-<div class="ask-news-edit">
+<script type="text/javascript" charset="utf-8" src="<?php echo base_url(); ?>static/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" charset="utf-8" src="<?php echo base_url(); ?>static/ueditor/editor_api.js"></script>
+<script type="text/javascript" charset="utf-8" src="<?php echo base_url(); ?>static/ueditor/lang/zh-cn/zh-cn.js"></script>
+<script type="text/javascript">
+    //根据容器的宽高
+    //容器给定高度
+    
+</script>
+<div class="ask-news-edit hide">
 	<div class="bg-opacity"></div>
 	<div class="edit-news-main">
-	
+		<div class="edit-news-head">
+			<h2>编辑新闻 <i class="fa fa-close pull-right"></i></h2>
+		</div>
+		<form id="editForm" method="post" action="<?php echo base_url() ?>index.php/manage/saveNews">
+	        <div class="news-editor-title">
+	        	<input type="text" name="newsTitle" id="newsTitle" placeholder="新闻标题" />
+	        </div>
+	        <script type="text/plain" id="newsContainEdit" name="newsContainEdit">
+	            <p>这是新闻具体内容</p>
+	        </script>
+	        <div class="news-editor-title">
+	        	<input type="text" name="newsLabel" id="newsLabel" placeholder="新闻标签" />
+	        </div>
+	        <div class="edit-contain-btn">
+	        	<input type="submit" value="提交" />
+	        	<input type="reset" class="reset-btn" value="取消" />
+	        </div>
+	    </form>
+		<script type="text/javascript">
+			UE.getEditor('newsContainEdit',{
+		        initialFrameWidth : 598,
+		        initialFrameHeight: 200
+		    });
+		</script>
 	</div>
 </div>
 <script type="text/javascript" src="<?php echo base_url(); ?>static/js/lib/jquery-1.12.2.js"></script>
