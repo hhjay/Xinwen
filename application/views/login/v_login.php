@@ -16,8 +16,7 @@
 				</ul>
 				<div class="head-login-tab">
 					<div class="head-tab active" id="login">
-						<!-- action="<?php echo base_url(); ?>login.php/loginDeal" -->
-						<form  method="post" name="loginForm">
+						<form method="post" name="loginForm">
 							<div class="login-input">
 								<span></span>
 								<input type="text" name="adminUsername" id="adminUsername" placeholder="手机号/账号**注意不是姓名**" required />

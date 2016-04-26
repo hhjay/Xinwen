@@ -22,6 +22,16 @@ class M_login extends CI_Model {
 			return false;
 		}
 	}
+	// 根据 账号名 返回对应的用户id
+	public function accountToUserId($user_account){
+		$sql = "SELECT u_id FROM user WHERE u_account = '$user_account' LIMIT 1";
+		$query = $this ->db ->query($sql);
+		if ( $query ->row_array() ) {// 存在用户返回true
+			return $query ->row_array();
+		}else{
+			return false;
+		}
+	}
 	// session里面的验证
 	public function sessionCheck($session){
 		$account = $session["u_account"];
@@ -29,7 +39,7 @@ class M_login extends CI_Model {
 		$sql = "SELECT * FROM user WHERE u_account = '$account' AND u_time = '$u_time' LIMIT 1";
 		$res = $this ->db ->query($sql)->row_array();
 		if ( $res ) { //验证是否存在和密码正确
-			return true;
+			return $res;
 		}else {
 			return false;
 		}
@@ -48,6 +58,24 @@ class M_login extends CI_Model {
 		}else {
 			return false;
 		}
+	}
+	// 更改用户头像的
+	public function updateUserHead($fileName, $u_account){
+		$sql = "UPDATE user SET u_head='$fileName' WHERE u_account='$u_account'";
+		$this ->db ->query($sql);
+	}
+	// 通过id查找对应的用户信息
+	public function selectUserFromAccount($user_account){
+		$query = $this ->db ->query("SELECT * FROM user WHERE u_account = '$user_account' LIMIT 1");
+		return $query ->row_array();
+	}
+	// 通过账号(在这里账号为唯一)修改用户的信息
+	public function updateUserMsgFromId($user, $session){
+		$u_account = $session["u_account"];
+		$u_name = $session["u_name"];
+
+		$this->db->where('u_account', $u_account);
+		$this ->db ->update("user", $user);
 	}
 }
 ?>

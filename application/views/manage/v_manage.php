@@ -1,76 +1,167 @@
-<!-- 个人主页 -->
-<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>static/css/font-awesome/font-awesome.css" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>static/css/manage.css" />
-<div class="manage-head-bg">
-	<div class="manage-head">
-		<div class="manage-logo pull-left">新闻</div>
-		<div class="manage-search pull-left">
-			<!-- 这里是搜索框 -->
-			<form  method="post" name="keyWordSearch">
-				<input type="text" name="keySearch" id="keySearch" class="key-input" placeholder="搜索你感兴趣的新闻" required />
-				<button class="btn-submit" id="loginBtn"><i class="fa fa-search"></i></button>
-			</form>
-		</div>
-		<!-- 标签 -->
-		<div class="manage-label pull-left">
-			<ul>
-				<a href=""><li class="active">首页</li></a>
-				<!-- 给你n多表签的选择 -->
-				<a href=""><li>分类</li></a>
-				<!-- 推荐给你看的新闻 -->
-				<a href=""><li>发现</li></a>
-				<!-- 别人评论你的 -->
-				<a href=""><li>消息</li></a>
-			</ul>
-		</div>
-		<!-- 个人信息的下拉菜单 -->
-		<div class="self-tab pull-right">
-			<div class="self-tab-name">
-				<a href="">
-					<img src="<?php echo base_url(); ?>static/upload/head.jpg" alt="新闻" />
-					<span>haung</span>
-				</a>
-			</div>
-			<div class="self-tab-main hide">
-				<ul>
-					<a href="<?php echo base_url() ?>index.php/manage"><li>我的主页</li></a>
-					<a href=""><li>管理</li></a>
-					<a href="<?php echo base_url() ?>index.php/login/logout"><li>退出</li></a>
-				</ul>
-			</div>
-		</div>
-		<!-- 编辑新的新闻 -->
-		<div class="manage-new pull-right"><button id="newsNewBtn">编&nbsp;辑</button></div>
-	</div>
-</div>
+<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>static/css/manage_self.css" />
 <div class="manage-contain">
 	<div class="manage-contain-left pull-left">
 		<!-- 个人信息的展示 border包含的地方 -->
 		<div class="contain-self-message">
-			<h2>黄小杰<span> , 这是你的个人一句话介绍</span></h2>
+			<h2><?php echo $user["u_name"]; ?>
+				<span>，
+					<?php if ( empty($user["u_introduce"]) ) {  ?>
+						<a href="javascript:;" class="introduce-btn">这是你的个人一句话介绍</a>
+					<?php }else{ 
+						echo $user["u_introduce"];
+					} ?>
+					<?php if ( $isSameUser ) { ?>
+						<a href="javascript:;" class="introduce-btn hide"><i class="fa fa-edit"></i><span>修改</span></a>
+					<?php } ?>
+				</span>
+				<span class="introduce-span hide">
+					<input type="text" id="userIntroduce" value='<?php echo $user["u_introduce"]; ?>' placeholder="这是你的个人一句话介绍" />
+					<button class="save-btn">确定</button>
+				</span>
+			</h2>
 			<!-- 个人头像 -->
 			<div class="contain-self-headImg pull-left">
-				<img src="<?php echo base_url(); ?>static/upload/head.jpg" alt="新闻" />
+				<?php 
+					$u_head = $user["u_head"];
+					if ( !$u_head ) {
+						$u_head = "head.jpg";
+					}
+				 ?>
+				<img src="<?php echo base_url(); ?>static/upload/<?php echo $u_head; ?>" alt="新闻" />
+				<?php if ( isset($session) ) { ?>
+				<span id="upfileSpan" class="hide">上传头像</span>
+					<?php echo form_open_multipart('login/upfileAjax'); ?>
+						<input type="file" name="userFile" id="userFile" size="20" />
+		        		<input type="submit" value="上传" />
+					</form>
+				<?php } ?>
 			</div>
 			<div class="contain-self-main pull-left">
 				<div class="contain-main-item item-first">
-					<span class="boder-right"><i class="fa fa-map-marker"></i>云南省</span>
-					<span class="boder-right">计算机软件行业</span>
-					<span><i class="fa fa-mars"><!-- 男 --></i><!-- <i class="fa fa-venus">女</i> --></span>
-					<a href="javascript:;" class="edit-btn hide"><i class="fa fa-edit"></i><span>修改</span></a>
+					<span class="pull-left"><i class="fa fa-map-marker"></i></span>
+					<div class="contain-item-show pull-left">
+						<span class="boder-right">
+							<span>
+								<?php if ( empty($user["u_address"]) ) {  ?>
+									<a href="javascript:;" class="edit-btn">填写居住地</a>
+								<?php }else{ 
+									echo $user["u_address"];
+								} ?>
+							</span>
+						</span>
+						<span class="boder-right">
+							<span>
+								<?php if ( empty($user["u_industry"]) ) {  ?>
+									<a href="javascript:;" class="edit-btn">填写所从事的行业</a>
+								<?php }else{ 
+									echo $user["u_industry"];
+								} ?>
+							</span>
+						</span>
+						<span>
+							<?php if ( $user["u_sex"]==0 ) {// 男  ?>
+								<i class="fa fa-mars"></i>
+							<?php }else{ ?>
+								<i class="fa fa-venus"></i>
+							<?php } ?>
+						</span>
+						<?php if ( $isSameUser ) { ?>
+						<a href="javascript:;" class="edit-btn hide"><i class="fa fa-edit"></i><span>修改</span></a>
+						<?php } ?>
+					</div>
+					<?php if ( $isSameUser ) { ?>
+					<div class="contain-item-edit pull-left hide">
+						<input type="text" id="userAddress" value='<?php echo $user["u_address"]; ?>' placeholder="你的地址" />
+						<input type="text" id="userIndustry" value='<?php echo $user["u_industry"]; ?>' placeholder="你所从事行业" />
+						<select id="userSex">
+							<?php if ( $user["u_sex"]==0 ) {// 男  ?>
+								<option value ="0" selected>男</option>
+						  		<option value ="1">女</option>
+							<?php }else{ ?>
+								<option value ="0">男</option>
+						  		<option value ="1" selected>女</option>
+							<?php } ?>
+						</select>
+						<button class="save-btn">确定</button>
+					</div>
+					<?php } ?>
 				</div>
 				<div class="contain-main-item">
-					<span class="boder-right"><i class="fa fa-building"></i>百度</span>
-					<span>java高级工程师</span>
-					<a href="javascript:;" class="edit-btn hide"><i class="fa fa-edit"></i><span>修改</span></a>
+					<span class="pull-left"><i class="fa fa-building"></i></span>
+					<div class="contain-item-show pull-left">
+						<span class="boder-right">
+							<?php if ( empty($user["u_company"]) ) {  ?>
+								<a href="javascript:;" class="edit-btn">填写所在公司</a>
+							<?php }else{ 
+								echo $user["u_company"];
+							} ?>
+						</span>
+						<span>
+							<?php if ( empty($user["u_occupation"]) ) {  ?>
+								<a href="javascript:;" class="edit-btn">填写职位</a>
+							<?php }else{ 
+								echo $user["u_occupation"];
+							} ?>
+						</span>
+						<?php if ( $isSameUser ) { ?>
+						<a href="javascript:;" class="edit-btn hide"><i class="fa fa-edit"></i><span>修改</span></a>
+						<?php } ?>
+					</div>
+					<div class="contain-item-edit pull-left hide">
+						<input type="text" id="userCompany" value='<?php echo $user["u_company"]; ?>' placeholder="你的公司" />
+						<input type="text" id="userOccupation" value='<?php echo $user["u_occupation"]; ?>' placeholder="你的职业" />
+						<button class="save-btn">确定</button>
+					</div>
 				</div>
 				<div class="contain-main-item">
-					<span class="boder-right"><i class="fa fa-mortar-board"></i>中南民族大学</span>
-					<span>文学与新闻传播</span>
-					<a href="javascript:;" class="edit-btn hide"><i class="fa fa-edit"></i><span>修改</span></a>
+					<span class="pull-left"><i class="fa fa-mortar-board"></i></span>
+					<div class="contain-item-show pull-left">
+						<span class="boder-right">
+							<?php if ( empty($user["u_school"]) ) {  ?>
+								<a href="javascript:;" class="edit-btn">填写学校</a>
+							<?php }else{ 
+								echo $user["u_school"];
+							} ?>
+						</span>
+						<span>
+							<?php if ( empty($user["u_major"]) ) {  ?>
+								<a href="javascript:;" class="edit-btn">填写专业</a>
+							<?php }else{ 
+								echo $user["u_major"];
+							} ?>
+						</span>
+						<?php if ( $isSameUser ) { ?>
+						<a href="javascript:;" class="edit-btn hide"><i class="fa fa-edit"></i><span>修改</span></a>
+						<?php } ?>
+					</div>
+					<?php if ( $isSameUser ) { ?>
+					<div class="contain-item-edit pull-left hide">
+						<input type="text" id="userSchool" value='<?php echo $user["u_school"]; ?>' placeholder="你的学校" />
+						<input type="text" id="userMajor" value='<?php echo $user["u_major"]; ?>' placeholder="你的专业" />
+						<button class="save-btn">确定</button>
+					</div>
+					<?php } ?>
 				</div>
 				<div class="contain-main-item">
-					<span><i class="fa fa-hand-o-right"></i>你还想说点什么</span>
+					<span class="pull-left"><i class="fa fa-hand-o-right"></i></span>
+					<div class="contain-item-show pull-left">
+						<span>
+							<?php if ( empty($user["u_talk"]) ) {  ?>
+								<a href="javascript:;" class="edit-btn">你还想说点什么</a>
+							<?php }else{ 
+								echo $user["u_talk"];
+							} ?>
+						</span>
+						<?php if ( $isSameUser ) { ?>
+						<a href="javascript:;" class="edit-btn hide"><i class="fa fa-edit"></i><span>修改</span></a>
+						<?php } ?>
+					</div>
+					<?php if ( $isSameUser ) { ?>
+					<div class="contain-item-edit pull-left hide">
+						<input type="text" id="userTalk" value='<?php echo $user["u_talk"]; ?>' placeholder="你还想说些什么" />
+						<button class="save-btn">确定</button>
+					</div>
+					<?php } ?>
 				</div>
 			</div>
 		</div>
@@ -78,50 +169,79 @@
 		<!-- 点击可以查看下面的具体内容 -->
 		<div class="contain-nav pull-left">
 			<ul>
-				<a href=""><li class="active"><i class="fa fa-home"></i></li></a>
-				<a href=""><li>发布<span>&nbsp;0</span><!-- 自己发布的新闻 --></li></a>
-				<a href=""><li>评论<span>&nbsp;0</span><!-- 自己评论的新闻 --></li></a>
-				<a href=""><li>收藏<span>&nbsp;0</span><!-- 自己评论的收藏 --></li></a>
+				<li class="active" href="#selfHome"><i class="fa fa-home"></i></li>
+				<li href="#selfFabu">发布<span>&nbsp;<?php echo count($fabuMsg); ?></span><!-- 自己发布的新闻 --></li>
+				<li href="#selfPinglun">评论<span>&nbsp;<?php echo count($pinglunMsg); ?></span><!-- 自己评论的新闻 --></li>
+				<li href="#selfShoucang">收藏<span>&nbsp;0</span><!-- 自己评论的收藏 --></li>
 			</ul>
 		</div>
 
 		<div class="clear-fix"><!-- 清除浮动 --></div>
-		<div class="news-contain">
+		<div class="news-contain" id="selfFabu">
 			<h3>发布的新闻 <a href=""><i class="fa fa-chevron-right pull-right"></i></a></h3>
-			<div class="news-contain-main">
-				<div class="news-contain-comment">
-					<b>0</b><br/>
-					<span>评论</span>
+			<?php foreach ($fabuMsg as $row) { ?>
+				<div class="news-contain-main">
+					<?php $fabuCount = $row ->fabuCount;// 发布的新闻被评论的人数 ?>
+					<div class="news-contain-comment">
+						<b><?php echo $fabuCount["commentCount"]; ?></b><br/>
+						<span>评论</span>
+					</div>
+					<div class="news-contaiin-title">
+						<a href="<?php echo base_url().'index.php/manage/showNews/'.$row ->a_id ?>"
+						 target="_blank" data-id="<?php echo $row ->a_id ?>">
+							<?php echo $row ->a_name; ?>
+						</a>
+						<?php 
+							$a_content = $row ->a_content;
+							$exp = '/<[^a][^<>]*>/';// 所有非a链接的文字
+							$showStr = preg_replace($exp, "", $a_content);
+							if ( mb_strlen($showStr) > 43 ) {
+								$showStr = mb_substr($showStr, 0, 46, "utf-8") . "......";
+							}
+						 ?>
+						<p><?php echo $showStr; ?></p>
+					</div>
 				</div>
-				<div class="news-contaiin-title">
-					<a href="">这是新闻标题</a>
-					<p>新闻前200字...</p>
-				</div>
-			</div>
+			<?php } ?>
 		</div>
-		<div class="news-contain">
+		<div class="news-contain" id="selfPinglun">
 			<h3>被评论的新闻</h3>
-			<div class="news-contain-main">
+			<div class="news-contain-main no-border-top">
+				<?php foreach ($pinglunMsg as $plRow) { ?>
 				<div class="news-contain-who">
-					<span>xx评论了该新闻</span>
-					<span class="pull-right">5天前</span>
+					<span><?php echo $plRow ->u_name; ?>评论了该新闻</span>
+					<?php 
+						$now = time();
+						$timeDiff = $now - $plRow->a_time;
+
+						$timeDiff = $timeDiff / 60;// 分钟
+						if ( $timeDiff >= 60 && $timeDiff < 1440 ) {// 小于一天
+							$timeDiff = $timeDiff / 60;
+							$timeDiff = floor($timeDiff) . "小时";
+						}else if( $timeDiff >= 1440 && $timeDiff < 43200 ){
+							$timeDiff = $timeDiff / 1440;
+							$timeDiff = floor($timeDiff) . "天";
+						}else if( $timeDiff >= 43200 && $timeDiff < 525600 ){
+							$timeDiff = $timeDiff / 43200;
+							$timeDiff = $timeDiff / 30;
+							$timeDiff = floor($timeDiff) . "月";
+						}else{// 小于一个小时 即60min
+							$timeDiff = floor($timeDiff) . "分钟";
+						}
+					?>
+					<span class="pull-right"><?php echo $timeDiff; ?>前</span>
 				</div>
 				<div class="news-contaiin-title margin-left">
-					<a href="">这是新闻标题</a>
+					<a href="<?php echo base_url().'index.php/manage/showNews/'.$plRow ->a_id ?>"
+					 target="_blank" data-id="<?php echo $plRow ->a_id ?>">
+						<?php echo $plRow ->a_name; ?>
+					</a>
 				</div>
 				<div class="hr-border"></div>
-			</div>
-			<div class="news-contain-main no-border-top">
-				<div class="news-contain-who">
-					<span>xx评论了该新闻</span>
-					<span class="pull-right">5天前</span>
-				</div>
-				<div class="news-contaiin-title margin-left">
-					<a href="">这是新闻标题</a>
-				</div>
+				<?php } ?>
 			</div>
 		</div>
-		<div class="news-contain">
+		<div class="news-contain" id="selfShoucang">
 			<h3>你自己收藏的新闻</h3>
 			<div class="news-contain-main">
 				<div class="news-contaiin-title margin-left">
@@ -148,23 +268,19 @@
 		</div>
 		<div class="footer-copyright">
 			<ul>
-				<li><a href="">中南民族大学</a></li>
-				<li><a href="">黄会杰</a></li>
-				<li><a href="">建议反馈</a></li>
-				<li><a href="">商务合作&copy;2016新闻</a></li>
+				<li><a href="http://www.scuec.edu.cn/" target="_blank">中南民族大学</a></li>
+				<li><a href="<?php echo base_url().'index.php/login/personShow/hhj' ?>" target="_blank">黄会杰</a></li>
+				<li><a href="" target="_blank">建议反馈</a></li>
+				<li><a href="" target="_blank">商务合作&copy;2016新闻</a></li>
 			</ul>
 		</div>
 	</div>
 </div>
 
+<?php if ( isset($session)) {// 判断是否登录 如果没有登录那么直接不加载该编辑框 ?>
 <script type="text/javascript" charset="utf-8" src="<?php echo base_url(); ?>static/ueditor/ueditor.config.js"></script>
 <script type="text/javascript" charset="utf-8" src="<?php echo base_url(); ?>static/ueditor/editor_api.js"></script>
 <script type="text/javascript" charset="utf-8" src="<?php echo base_url(); ?>static/ueditor/lang/zh-cn/zh-cn.js"></script>
-<script type="text/javascript">
-    //根据容器的宽高
-    //容器给定高度
-    
-</script>
 <div class="ask-news-edit hide">
 	<div class="bg-opacity"></div>
 	<div class="edit-news-main">
@@ -180,6 +296,10 @@
 	        </script>
 	        <div class="news-editor-title">
 	        	<input type="text" name="newsLabel" id="newsLabel" placeholder="新闻标签" />
+	        	<div class="news-label-return-list">
+	        		<ul>
+	        		</ul>
+	        	</div>
 	        </div>
 	        <div class="edit-contain-btn">
 	        	<input type="submit" value="提交" />
@@ -194,5 +314,4 @@
 		</script>
 	</div>
 </div>
-<script type="text/javascript" src="<?php echo base_url(); ?>static/js/lib/jquery-1.12.2.js"></script>
-<script type="text/javascript" src="<?php echo base_url(); ?>static/js/manage.js"></script>
+<?php } ?>

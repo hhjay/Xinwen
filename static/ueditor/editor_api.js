@@ -122,7 +122,7 @@
             'adapter/autosave.js'
 
         ],
-        baseURL = './static/ueditor/_src/';
+        baseURL = base_url + 'static/ueditor/_src/';
     for (var i=0,pi;pi = paths[i++];) {
         document.write('<script type="text/javascript" src="'+ baseURL + pi +'"></script>');
     }

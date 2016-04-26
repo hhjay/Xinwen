@@ -1,0 +1,116 @@
+/*
+ * 新闻具体页面
+ */
+ .manage-contain{
+	font-family: 12px "Microsoft YaHei","\u5FAE\u8F6F\u96C5\u9ED1","Arial","SimSun","\u5B8B\u4F53";
+ }
+.news-head{
+	width: 80%;height: 30px;
+	text-align: center;line-height: 30px;
+	font-size: 30px; font-weight: bold;
+	margin: 20px 0;
+	color: #333;
+}
+.news-contain{
+	margin: 10px 0;
+}
+.news-time{
+	color: #999;
+	    width: 127px;
+}
+.news-contain{
+	border: none;
+}
+.news-contain p{
+	font-size: 16px;
+	text-indent: 2em;
+	line-height: 2em;
+	margin-top: 5px;
+}
+.news-author{
+	width: 100%;height: 25px;
+	margin: 20px 0 5px;
+	text-align: right;line-height: 25px;
+	font-size: 18px;
+}
+.news-recommend{
+	border-top: 1px dashed #ddd;padding-top: 10px;
+	width: 100%;
+}
+.news-recommend h3{
+	font-size: 17px;
+	padding: 10px 0;
+}
+.news-recommend ul{
+	margin-left: 15px;
+}
+.news-recommend li{
+	width: 45%;height: 25px;
+	float: left;line-height: 25px;
+	margin-top: 5px;
+	font: 14px/28px "\5B8B\4F53";
+	overflow: hidden;
+}
+.news-recommend li a{
+	color: #000;
+}
+.bottom-20px{
+	width: 100%;height: 20px;
+	clear: both;
+}
+.news-label-keep{
+	text-align: center;
+	width: 100%;line-height: 70px;
+}
+.news-label-keep span{
+	font-size: 16px;
+}
+.news-label-keep b{
+	font-size: 18px;
+}
+.news-comment{
+	width: 100%;height: 160px;
+	clear: both;text-align: left;
+}
+.text-input{
+	width: 580px;height: 100px;padding: 5px 8px;
+	font-size: 14px;
+}
+.no-focus{ color: #b8b8b8; }
+.comment-form{
+	border-top: 2px dashed #ddd;
+	margin-top: 10px;
+	padding-top: 20px;
+	border-bottom: 1px dotted #d9d9d9;
+}
+.comment-form h2{ margin: 0 0 20px; }
+.comment-form h2 span{ color: #ee542a; }
+.comment-form img{
+	width: 50px;height: 50px;margin-left: 20px;
+}
+.comment-submit{
+	width: 65px;
+    height: 30px;
+    float: right;
+    margin-top: 80px;
+    margin-left: 5px;
+}
+.comment-list{
+	width: 100%;margin-top: 10px;
+	clear: both;
+}
+.comment-li{
+	width: 100%;margin-top: 10px;
+	clear: both;border-bottom: 1px dotted #d9d9d9;
+	min-height: 60px;
+}
+.comment-li img{
+	width: 50px;height: 50px;
+	margin-left: 20px;
+}
+.list-right{
+	margin-left: 10px;width: 89%;
+}
+.list-user-msg{ width: 100%; }
+.list-user-msg .list-time{ float: right;color: #b8b8b8; }
+.list-contain{ padding: 10px;color: #000; }

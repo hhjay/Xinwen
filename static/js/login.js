@@ -69,9 +69,9 @@ $(document).ready(function() {
                         $("#userPassword").focus();
                     }else if( res == "404"){
                         alert("404 not found！");
-                        window.location = "./";
+                        window.location.assign(base_url);
                     }else{// 200 登录成功
-                        window.location = "./";
+                        window.location.assign(base_url);
                     }
                 },
                 error: function(err) {
@@ -143,9 +143,9 @@ $(document).ready(function() {
                         $("#userAccount").focus();
                     }else if( res == "404"){
                         alert("404 not found！");
-                        window.location = "./";
+                        window.location.assign(base_url);
                     }else{
-                        window.location = "./";
+                        window.location.assign(base_url);
                     }
                 },
                 error: function(err) {

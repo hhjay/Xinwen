@@ -8,7 +8,9 @@ class Login extends CI_Controller {
 	public function __construct() {
         parent::__construct();
         $this ->load ->helper('url');
+        $this->load->helper(array('form', 'url'));
         $this ->load ->model('m_login');
+        $this ->load ->model('m_news');
         $this ->load ->library('session');
     }
 	public function index(){
@@ -19,23 +21,60 @@ class Login extends CI_Controller {
 	public function checkLogin(){
 		$session_data = $this ->session ->userdata("admin");
 		if ( empty($session_data) ) {
-			$this ->load ->view('header');
-			$this ->load ->view('login/v_login');
-			$this ->load ->view('footer');
+			$this ->viewIndexNewsShow();
 		}else{
 			// 通过session
 			$loginUser = $this ->m_login ->sessionCheck( $session_data );
-			if ( $loginUser ) {
-
-				$this ->load ->view('header');
-				$this ->load ->view('manage/v_manage');// 登录成功跳到个人管理页面
-				$this ->load ->view('footer');
+			if ( !$loginUser ) {
+				$this ->viewIndexNewsShow();
 			}else{
-				$this ->load ->view('header');
-				$this ->load ->view('login/v_login');
-				$this ->load ->view('footer');
+				// 重新保存session 因为上传或者别的刷新页面会影响session的改变\
+				$u_head = $loginUser["u_head"];
+				if ( !$u_head ) {
+					$u_head = "head.jpg";
+				}
+				$saveSession = array(
+					'u_name'    =>$loginUser["u_name"],
+					'u_time'    =>$loginUser["u_time"],
+					'u_account' =>$loginUser["u_account"],
+					"u_head"    =>$u_head
+				);
+				$this ->session ->set_userdata("admin", $saveSession);
+
+				$this ->viewIndexNewsShow();
 			}
 		}
+	}
+	public function viewIndexNewsShow(){
+		$this ->load ->library('pagination');
+		$config['base_url'] = base_url().'index.php/login/viewIndexNewsShow/';
+		$config['per_page'] = 5;
+    	$config["total_rows"] = $this ->db ->count_all("article");
+
+		$this->pagination->initialize( $config );
+    	$num = $config["per_page"];
+    	$offset = $this ->uri ->segment(3);// 类似从get参数里面获取
+    	
+    	$all_mes = $this ->m_news ->selectNewsList($num, ($offset && $offset >= 0 ? $offset : 0));
+	    $this ->pagination ->initialize($config);
+	    // 热门新闻 浏览量最多的五条新闻
+	    // 热门收藏 被收藏最多的五条标签
+	    $hotNews = $this ->m_news ->selectHotNews();
+	    $session_data = $this ->session ->userdata("admin");
+	    $v_data = array(
+	    	"page"	  =>$this ->pagination ->create_links(),// 页码
+	    	"all_news"=>$all_mes, // 所有的新闻
+	    	"hotNews" =>$hotNews,
+	    	"session" =>$session_data
+	    );
+	    $this ->load ->view('header');
+	    if ( !empty($session_data) ) {
+			$this ->load ->view('manage/v_mhead', $v_data);
+	    }else{
+			$this ->load ->view('login/v_login');
+	    }
+		$this ->load ->view('v_index', $v_data);
+		$this ->load ->view('footer');
 	}
 	// 注销登录
 	public function logout(){
@@ -109,7 +148,8 @@ class Login extends CI_Controller {
 							$saveSession = array(
 								'u_name'    =>$loginUser["u_name"],
 								'u_time'    =>$loginUser["u_time"],
-								'u_account' =>$loginUser["u_account"]
+								'u_account' =>$loginUser["u_account"],
+								"u_head"    =>$loginUser["u_head"]
 							);
 							$this ->session ->set_userdata("admin", $saveSession);
 							echo "200";
@@ -174,7 +214,8 @@ class Login extends CI_Controller {
 						$saveSession = array(
 							'u_name'    =>$user["u_name"],
 							'u_time'    =>$user["u_time"],
-							'u_account' =>$user["u_account"]
+							'u_account' =>$user["u_account"],
+							"u_head"    =>$user["u_head"]
 						);
 						$this ->session ->set_userdata("admin", $saveSession);
 						echo "200";
@@ -186,5 +227,109 @@ class Login extends CI_Controller {
 		}else{
 			echo "404";			
 		}
+	}
+	/* 上传用户头像的php
+	 * ajax上传
+	 */
+	public function upfileAjax(){
+		$str = "abcdefghijklmnopqrstuvwxyz";
+		$file_name = "";
+		for ($i=0; $i <= 5; $i++) { // 随机生成文件名 前五位
+			$num = rand(0, 25);
+			$file_name .= $str[$num];
+		}
+		$time = time();
+		$file_name = $file_name."_".$time;//文件名
+		$config['upload_path']   = './static/upload';
+        $config['allowed_types'] = 'gif|jpg|png';
+		$config['file_name']   = $file_name;
+        $config['max_size']      = 1000;
+        $config['max_width']     = 1024;
+        $config['max_height']    = 768;
+
+        $this->load->library('upload', $config);
+
+		$session_data = $this ->session ->userdata("admin");
+
+        if ( !$this->upload->do_upload('userFile') ) {
+            $error = array('error' => $this->upload->display_errors());
+            echo "error";
+        } else {
+            $upload_data = $this ->upload ->data();
+			$this ->m_login ->updateUserHead( $upload_data['file_name'], $session_data["u_account"] );
+        }
+        redirect('/');
+	}
+
+	/*
+	 * 用户头像点击进来的 个人页面(该用户可能没有登录)  通过用户账号而不是id
+	 */
+	public function personShow($userAccount){
+		$this->load->library('pagination');
+		if ( !isset($userAccount) ) {
+			$userAccount = $this ->uri ->segment(3);// 类似从get参数里面获取
+		}
+		if ( $userAccount ) {
+			$session_data = $this ->session ->userdata("admin");
+			$isSameUser = false;// 判断是否同一个人
+
+			// 通过 账号 查找当前用户
+			$userMsg = $this ->m_login ->selectUserFromAccount($userAccount);
+
+			if ( !!$session_data ) {// 登录的
+				$u_head = $session_data["u_head"];
+				if ( !$u_head ) {
+					$u_head = "head.jpg";
+				}
+				$saveSession = array(
+					'u_name'    =>$session_data["u_name"],
+					'u_time'    =>$session_data["u_time"],
+					'u_account' =>$session_data["u_account"],
+					"u_head"    =>$u_head
+				);
+				if ( $session_data["u_account"] == $userMsg["u_account"] ) {// 登录的和当前用户一致
+					$isSameUser = true;
+				}
+				$user = $this ->m_login ->accountToUserId($session_data["u_account"]);
+				// TODO 现在全部拉取出来 分页待定
+				$fabuMsg = $this ->m_news ->selectFabuNews($user["u_id"], $session_data["u_account"]);
+				// TODO 评论的
+				$pinglunMsg = $this ->m_news ->selectPinglunNews($user["u_id"]);
+				$pinglunArr = array();
+				if ( isset($pinglunMsg) ) {
+					foreach ($pinglunMsg as $row) {
+						if ( isset($row ->u_name) ) {
+							array_push($pinglunArr, $row);
+						}
+					}
+				}
+				$v_data = array(
+					"session" =>$saveSession, // 是否登录
+					"user"    =>$userMsg,
+					"isSameUser" =>$isSameUser,
+					"fabuMsg" =>$fabuMsg, //自己发布的信息
+					"pinglunMsg" =>$pinglunArr
+				);
+			}else{
+				$v_data = array(
+					"user" =>$userMsg, // 用户信息
+					"isSameUser" =>$isSameUser
+				);
+			}
+
+			// 新闻内容 相关十条新闻 被收藏的人数
+			$this ->load ->view('header');
+			$this ->load ->view('manage/v_mhead', $v_data);
+			$this ->load ->view('manage/v_manage', $v_data);
+			$this ->load ->view('footer');
+		}else{
+        	redirect('/');
+		}
+	}
+	// ajax更改用户的信息
+	public function updateUserMsg(){
+		$session_data = $this ->session ->userdata("admin");// 自己的session
+		$userData = $_POST;
+		$this ->m_login ->updateUserMsgFromId($userData, $session_data);
 	}
 }
