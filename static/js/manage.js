@@ -58,12 +58,13 @@ $(document).ready(function() {
 		});
 	});
 
-
 	// 编辑按钮的点击事件 使当前的新闻编辑出现
 	$("#newsNewBtn").click(function(event) {
+		event.preventDefault();
+		// $(".ask-news-edit input").val("");
+		// $("#newsContainEdit #ueditor_0 body").html("<p>这是新闻具体内容</p>");
 		$(".ask-news-edit").removeClass('hide');
 	});
-
 	$(".ask-news-edit").delegate('.fa-close', 'click', function(event) {
 		event.preventDefault();
 		$(".ask-news-edit").addClass('hide');
@@ -71,7 +72,7 @@ $(document).ready(function() {
 	/* 确定按钮和取消按钮的事件绑定
 	 * 阻止默认事件
 	 */
-	$(".edit-contain-btn").delegate('input', 'click', function(event) {
+	$(".edit-contain-btn").delegate('button', 'click', function(event) {
 		event.preventDefault();
 		var _this = $(this),
 			btnType = _this.attr("type");
@@ -89,7 +90,6 @@ $(document).ready(function() {
 			}
 		}
 	});
-
 	// 标签输入时候返回的列表li
 	$(".news-editor-title").delegate('#newsLabel', 'keyup', function(e) {
 		e.preventDefault();
@@ -98,7 +98,7 @@ $(document).ready(function() {
 		var valTime = setTimeout(function(){
 			labelVal = $("#newsLabel").val();
 		}, 1500);
-		if ( keyNum == 32 || keyNum == 13 ) {
+		if ( keyNum == 32 || keyNum == 13 || keyNum == 8 || (keyNum >=48 && keyNum<= 57) ) {
 			clearTimeout(valTime);
 			labelVal = $("#newsLabel").val();
 			$(".news-label-return-list ul").html();
@@ -115,21 +115,14 @@ $(document).ready(function() {
 					}else if( res == 400 ){
 						alert( "没有返回结果" );
 					}else{
-						var resArr = res.split(","),
-							labelArr = new Array();
-						for (var i = 0; i < (resArr.length-1); i++) {
-							if ( resArr[i] != resArr[i+1] ) {
-								labelArr.push( resArr[i] );
-							};
-						};
-
-						var listHtml = "",
+						var labelArr = res.split(","),
+							listHtml = "",
 							len      = 10;
 						if ( labelArr.length <= 10 ) {
-							len = labelArr.length;
+							len = labelArr.length - 1;
 						}
 						for (var i = 0; i < len; i++) {
-							listHtml += "<li>"+ labelArr[i] +"</li>"	
+							listHtml += "<li>"+ labelArr[i] +"</li>";
 						};
 						$(".news-label-return-list").removeClass('hide');
 						$(".news-label-return-list ul").append( listHtml );
@@ -141,11 +134,11 @@ $(document).ready(function() {
 			});
 		};
 	});
-
 	$(".news-label-return-list").delegate('li', 'click', function() {
 		$("#newsLabel").val( $(this).text() );
 		$(".news-label-return-list").addClass('hide');
 	});	
+	
 
 	// 头像上传的按钮 显示与消失
 	$(".contain-self-headImg img").mouseenter(function() {

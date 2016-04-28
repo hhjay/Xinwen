@@ -85,7 +85,7 @@
 	border-radius: 2px;border: 1px solid #fcfcfc;
 }
 .self-tab-main{
-	min-width: 120px;height: 90px;
+	min-width: 120px;height: 60px;
 	background: #e5e5e5;position: absolute;
 }
 .self-tab-main li{

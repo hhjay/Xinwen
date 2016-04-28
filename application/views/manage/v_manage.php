@@ -172,7 +172,7 @@
 				<li class="active" href="#selfHome"><i class="fa fa-home"></i></li>
 				<li href="#selfFabu">发布<span>&nbsp;<?php echo count($fabuMsg); ?></span><!-- 自己发布的新闻 --></li>
 				<li href="#selfPinglun">评论<span>&nbsp;<?php echo count($pinglunMsg); ?></span><!-- 自己评论的新闻 --></li>
-				<li href="#selfShoucang">收藏<span>&nbsp;0</span><!-- 自己评论的收藏 --></li>
+				<li href="#selfShoucang">收藏<span>&nbsp;<?php echo count($keepMsg); ?></span><!-- 自己评论的收藏 --></li>
 			</ul>
 		</div>
 
@@ -243,75 +243,49 @@
 		</div>
 		<div class="news-contain" id="selfShoucang">
 			<h3>你自己收藏的新闻</h3>
+			<?php foreach ($keepMsg as $keepRow) { ?>
 			<div class="news-contain-main">
 				<div class="news-contaiin-title margin-left">
-					<a href="">这是新闻标题</a>
-					<p>新闻前200字...</p>
+					<a href="<?php echo base_url().'index.php/manage/showNews/'.$keepRow ->a_id ?>"
+					 target="_blank" data-id="<?php echo $keepRow ->a_id ?>">
+						<?php echo $keepRow ->a_name; ?>
+					</a>
+					<?php 
+						$a_content = $keepRow ->a_content;
+						$exp = '/<[^a][^<>]*>/';// 所有非a链接的文字
+						$showStr = preg_replace($exp, "", $a_content);
+						if ( mb_strlen($showStr) > 43 ) {
+							$showStr = mb_substr($showStr, 0, 46, "utf-8") . "......";
+						}
+					 ?>
+					<p><?php echo $showStr; ?></p>
 				</div>
 			</div>
+			<?php } ?>
 		</div>
 	</div>
 	<div class="manage-contain-right pull-right">
 		<div class="new-label">
 			<!-- 你收藏别人的表签 -->
 			<div class="news-label-keep pull-left">
-				<span>收藏了</span><br/>
-				<b>8</b><span>个</span><br/>
-				<span>标签</span>
+				<span>发表了</span><br/>
+				<b> <?php echo count($fabuMsg); ?> </b><span>篇</span><br/>
+				<span>新闻</span>
 			</div>
 			<!-- 别人收藏了多少你的标签 -->
 			<div class="news-label-keep pull-right news-lebal-left-border">
 				<span>收藏了</span><br/>
-				<b>9</b><span>个</span><br/>
-				<span>标签</span>
+				<b> <?php echo count($keepMsg); ?> </b><span>篇</span><br/>
+				<span>新闻</span>
 			</div>
 		</div>
 		<div class="footer-copyright">
 			<ul>
 				<li><a href="http://www.scuec.edu.cn/" target="_blank">中南民族大学</a></li>
 				<li><a href="<?php echo base_url().'index.php/login/personShow/hhj' ?>" target="_blank">黄会杰</a></li>
-				<li><a href="" target="_blank">建议反馈</a></li>
+				<li><a href="javascript:;" id="feedbackButton">建议反馈</a></li>
 				<li><a href="" target="_blank">商务合作&copy;2016新闻</a></li>
 			</ul>
 		</div>
 	</div>
 </div>
-
-<?php if ( isset($session)) {// 判断是否登录 如果没有登录那么直接不加载该编辑框 ?>
-<script type="text/javascript" charset="utf-8" src="<?php echo base_url(); ?>static/ueditor/ueditor.config.js"></script>
-<script type="text/javascript" charset="utf-8" src="<?php echo base_url(); ?>static/ueditor/editor_api.js"></script>
-<script type="text/javascript" charset="utf-8" src="<?php echo base_url(); ?>static/ueditor/lang/zh-cn/zh-cn.js"></script>
-<div class="ask-news-edit hide">
-	<div class="bg-opacity"></div>
-	<div class="edit-news-main">
-		<div class="edit-news-head">
-			<h2>编辑新闻 <i class="fa fa-close pull-right"></i></h2>
-		</div>
-		<form id="editForm" method="post" action="<?php echo base_url() ?>index.php/manage/saveNews">
-	        <div class="news-editor-title">
-	        	<input type="text" name="newsTitle" id="newsTitle" placeholder="新闻标题" />
-	        </div>
-	        <script type="text/plain" id="newsContainEdit" name="newsContainEdit">
-	            <p>这是新闻具体内容</p>
-	        </script>
-	        <div class="news-editor-title">
-	        	<input type="text" name="newsLabel" id="newsLabel" placeholder="新闻标签" />
-	        	<div class="news-label-return-list">
-	        		<ul>
-	        		</ul>
-	        	</div>
-	        </div>
-	        <div class="edit-contain-btn">
-	        	<input type="submit" value="提交" />
-	        	<input type="reset" class="reset-btn" value="取消" />
-	        </div>
-	    </form>
-		<script type="text/javascript">
-			UE.getEditor('newsContainEdit',{
-		        initialFrameWidth : 598,
-		        initialFrameHeight: 200
-		    });
-		</script>
-	</div>
-</div>
-<?php } ?>

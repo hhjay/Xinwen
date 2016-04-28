@@ -91,7 +91,8 @@
 			<ul>
 			<?php for ($i=0; $i < count($news_list); $i++) { ?>
 				<li>
-					<a href="<?php echo base_url().'index.php/manage/showNews/'.$news_list[$i]->a_id; ?>">
+					<a href="<?php echo base_url().'index.php/manage/showNews/'.$news_list[$i]->a_id; ?>"
+					 data-id="<?php echo $news_list[$i]->a_id; ?>">
 						<?php echo $news_list[$i]->a_name; ?>
 					</a>
 				</li>
@@ -103,7 +104,7 @@
 			<ul>
 				<li><a href="http://www.scuec.edu.cn/" target="_blank">中南民族大学</a></li>
 				<li><a href="">黄会杰</a></li>
-				<li><a href="">建议反馈</a></li>
+				<li><a href="javascript:;" id="feedbackButton">建议反馈</a></li>
 				<li><a href="">商务合作&copy;2016新闻</a></li>
 			</ul>
 		</div>
@@ -111,68 +112,21 @@
 </div>
 <script type="text/javascript">
 	$(document).ready(function() {
+		// 评论框的
 		$("#commentContain").focus(function(event) {
 			$(this).val("");$(this).removeClass('no-focus');
 		});
 		$("#commentContain").blur(function(event) {
 			$(this).addClass('no-focus');
 		});
-	});	
+		$(".news-head").hover(function() {
+			$(this).children('a').removeClass('hide');
+		}, function() {
+			$(this).children('a').addClass('hide');
+		});
+		$(".edit-btn").click(function() {
+			$(".ask-news-edit").removeClass('hide');
+		});
+	});
 </script>
-<?php if ( isset($session) ) {// 判断是否登录 如果没有登录那么直接不加载该编辑框 ?>
-<script type="text/javascript" charset="utf-8" src="<?php echo base_url(); ?>static/ueditor/ueditor.config.js"></script>
-<script type="text/javascript" charset="utf-8" src="<?php echo base_url(); ?>static/ueditor/editor_api.js"></script>
-<script type="text/javascript" charset="utf-8" src="<?php echo base_url(); ?>static/ueditor/lang/zh-cn/zh-cn.js"></script>
-<div class="ask-news-edit hide">
-	<div class="bg-opacity"></div>
-	<div class="edit-news-main">
-		<div class="edit-news-head">
-			<h2>编辑新闻 <i class="fa fa-close pull-right"></i></h2>
-		</div>
-		<?php 
-			$a_id = $news_contain["a_id"];
-			$url = base_url()."index.php/manage/uptateNews/".$a_id;
-		?>
-		<form id="editForm" method="post" action="<?php echo $url; ?>">
-	        <div class="news-editor-title">
-	        	<input type="text" name="newsTitle" id="newsTitle" value='<?php echo $news_contain["a_name"]; ?>' placeholder="新闻标题" />
-	        </div>
-	        <script type="text/plain" id="newsContainEdit" name="newsContainEdit">
-	            <?php echo $news_contain["a_content"]; ?>
-	        </script>
-	        <div class="news-editor-title">
-	        	<input type="text" name="newsLabel" id="newsLabel" value="<?php echo $news_contain['a_label']; ?>" placeholder="新闻标签" />
-	        	<div class="news-label-return-list">
-	        		<ul>
-	        		</ul>
-	        	</div>
-	        </div>
-	        <div class="edit-contain-btn">
-	        	<input type="submit" value="提交" />
-	        	<input type="reset" class="reset-btn" value="取消" />
-	        </div>
-	    </form>
-		<script type="text/javascript">
-			UE.getEditor('newsContainEdit',{
-		        initialFrameWidth : 598,
-		        initialFrameHeight: 200
-		    });
-		</script>
-	</div>
-</div>
-<?php } ?>
-<style type="text/css">
-</style>
 <script type="text/javascript" src="<?php echo base_url(); ?>static/js/manage.js"></script>
-<script type="text/javascript">
-$(document).ready(function() {
-	$(".news-head").hover(function() {
-		$(this).children('a').removeClass('hide');
-	}, function() {
-		$(this).children('a').addClass('hide');
-	});
-	$(".edit-btn").click(function() {
-		$(".ask-news-edit").removeClass('hide');
-	});
-});
-</script>

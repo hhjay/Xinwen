@@ -127,8 +127,9 @@ class Manage extends CI_Controller {
 		    );
 			// 新闻内容 相关十条新闻 被收藏的人数
 			$this ->load ->view('header');
-			$this ->load ->view('manage/v_mhead');
+			$this ->load ->view('manage/v_mhead', $v_data);
 			$this ->load ->view('manage/v_news_show', $v_data);
+			$this ->load ->view('manage/v_edit', $v_data);
 			$this ->load ->view('footer');
     		return $newsId;
 		}else{
@@ -155,6 +156,94 @@ class Manage extends CI_Controller {
 			"c_time"    =>time()
 		);
 		$this ->m_news ->addComment($data);
+        redirect('/');
+	}
+	/* ajax请求 收藏 的保存
+	 * @newsId新闻id @user-account用户账号 不可以匿名收藏
+	 * requrst(404-请求方式出错, 100-空字符, 101-没有登录, 202已经保存过该新闻)
+	 */
+	public function ajaxKeepSave(){
+		if ($_SERVER['REQUEST_METHOD'] == 'POST'){
+			$news = $_POST;
+			$k_news_id = $this ->security ->xss_clean( $news["a_id"] );
+
+			// 判断字符是否合法
+			if ( empty($k_news_id) ) {
+				echo 100;
+			}else{
+				// 判断是否登录
+				$session_data = $this ->session ->userdata("admin");
+				if ( empty($session_data) ) {
+					echo 101;
+				}else{
+					$loginUser = $this ->m_login ->sessionCheck( $session_data );
+					if ( !$loginUser ) {
+						echo 101;
+					}else{
+						$data = array(
+							"k_news_id"     =>$k_news_id,
+							"k_user_accound"=>$loginUser["u_account"]
+						);
+						$isKeep = $this ->m_news ->judgeNewsIsKeep($data["k_news_id"]);
+						$keepStr = $isKeep["a_keep_user"];
+						$keepArr = explode(",", $keepStr);
+						$flag = false;
+						for ($i=0; $i < count($keepArr); $i++) { 
+							if ( $keepArr[$i] == $data["k_user_accound"] ) {
+								echo 202; break;
+							}else{
+								$flag = true;
+							}
+						}
+						if ( $flag ) {
+							echo 200; $this ->m_news ->addKeep($data);
+						}
+					}
+				}
+			}
+		}else{
+			echo 404;		
+		}
+	}
+	/* 分类的 直接拉取出来所以分类
+	 * 然后再把分类的内容展示(直接不分页)
+	 */
+	public function fenleiNews(){
+		// 真的url是不是类似 fenleiNews/政治/1
+    	$label = $this ->uri ->segment(3);// 类似从get参数里面获取
+    	$label = urldecode($label);
+    	$fenlei_label = $this ->m_news ->selectFenleiNews();// 所有的标签
+	    $session_data = $this ->session ->userdata("admin");
+	    $fenlei_list  = $this ->m_news ->selectFenleiList($label);
+	    $v_data = array(
+	    	"fenlei_news"=>$fenlei_list, // 所有的新闻
+	    	"fenlei_label" =>$fenlei_label,
+	    	"session" =>$session_data // 登录信息
+	    );
+
+	    $this ->load ->view('header');
+	    if ( !empty($session_data) ) {
+			$this ->load ->view('manage/v_mhead', $v_data);
+	    }else{
+			$this ->load ->view('login/v_login');
+	    }
+		$this ->load ->view('v_index', $v_data);
+		$this ->load ->view('manage/v_edit', $v_data);
+		$this ->load ->view('footer');
+	}
+	/* 用户反馈 保存反馈内容和账号
+	 */
+	public function feedBack(){
+		$this ->load ->library("form_validation");
+		$this ->form_validation ->set_rules("textFeedback","textFeedback","required");
+		$f_contain = $this ->security ->xss_clean( $this->input->post("textFeedback") );
+		$session_data = $this ->session ->userdata("admin");
+		$data = array(
+			"f_user_account" =>$session_data["u_account"],
+			"f_contain" =>$f_contain,
+			"f_time"    =>time()
+		);
+		$this ->m_news ->addFeedback( $data );
         redirect('/');
 	}
 }

@@ -9,7 +9,7 @@ class M_news extends CI_Model {
 	}
 	// 拉取所有类似的结果 标签列表
 	public function inputLabelList($label){
-		$sql = "SELECT a_label FROM article WHERE a_label LIKE '%$label%'";
+		$sql = "SELECT distinct a_label FROM article WHERE a_label LIKE '%$label%'";
 		$resLabel = $this ->db ->query($sql);
 		if ( $resLabel ->row_array() ) {
 			return $resLabel ->result();
@@ -26,23 +26,63 @@ class M_news extends CI_Model {
 		$res = array();
 		$mes_data = $this ->db ->query("SELECT * FROM article ORDER BY a_time DESC LIMIT $offset, $num");
 		$mes_data = $mes_data->result();
+		
 		foreach ($mes_data as $row) {
 			$u_id = $row ->a_author_id;
 			$sql = "SELECT * FROM user WHERE u_id = '$u_id' LIMIT 1";
 			$query = $this ->db ->query($sql);
 			$u_name_q = $query ->row_array();
 			
-			$row->u_name = $u_name_q["u_name"];
-			$row->u_head = $u_name_q["u_head"];
+			$newsId = $row ->a_id;
+			// 找到评论人数
+			$pinglun = $this ->db ->query("SELECT c_user_account FROM comment WHERE c_news_id = '$newsId'");
+
+			$row ->u_name = $u_name_q["u_name"];
+			$row ->u_head = $u_name_q["u_head"];
+			$row ->pinglun = $pinglun ->result();
 			$row->u_account = $u_name_q["u_account"];
 
 			array_push($res, $row);
 		}
 		return $res;
 	}
+	// 拉取出所有的label
+	public function selectFenleiNews(){
+		$sql = ("SELECT distinct a_label FROM article"); // 拉取出所以话题HAVING count(*) >= 1)
+		$label = $this ->db ->query($sql);
+		return $label->result();
+	}
+	// 拉取所有的label下面的新闻
+	public function selectFenleiList($label){
+		if ( empty($label) ) {
+			$sql = "SELECT * FROM article ORDER BY a_time";
+		}else{
+			$sql = "SELECT * FROM article WHERE a_label = '$label' ORDER BY a_time";
+		}
+		$res = array();
+		$fenlei = $this ->db ->query( $sql );
+		$fenlei = $fenlei ->result();
+		foreach ($fenlei as $row) {
+			$u_id = $row ->a_author_id;
+
+			$sql = "SELECT * FROM user WHERE u_id = '$u_id' LIMIT 1";
+			$query = $this ->db ->query($sql);
+			$u_name_q = $query ->row_array();
+			
+			$newsId = $row ->a_id;
+			// 找到评论人数
+			$pinglun = $this ->db ->query("SELECT c_user_account FROM comment WHERE c_news_id = '$newsId'");
+
+			$row ->u_name = $u_name_q["u_name"];
+			$row ->u_head = $u_name_q["u_head"];
+			$row ->pinglun = $pinglun ->result();
+			$row->u_account = $u_name_q["u_account"];
+			array_push($res, $row);
+		}
+		return $res;
+	}
 	// 拉取出新闻内容 该新闻对应的相关新闻 及该新闻的pv
 	public function selectNewsContain($newsId){
-		$res = array();
 		$mes_data = $this ->db ->query("SELECT * FROM article WHERE a_id = '$newsId' LIMIT 1");
 		$mes_data = $mes_data->row_array();
 		return $mes_data;
@@ -146,6 +186,52 @@ class M_news extends CI_Model {
 			}
 		}
 		return $return;
+	}
+	// 保存收藏的新闻
+	public function addKeep($keep) {
+		$a_id = $keep["k_news_id"];
+		$u_account = $keep["k_user_accound"];
+
+		$query = $this ->db ->query("SELECT * FROM article WHERE a_id = '$a_id' LIMIT 1");
+		$sqlKeep = $query ->row_array();
+		$keepStr = $sqlKeep["a_keep_user"];
+		if ( !empty($keepStr) ) {
+			$keepStr = $keepStr . "," . $u_account;
+		}else{
+			$keepStr = $u_account;
+		}
+		$a_keep_count = $sqlKeep["a_keep_count"] + 1;
+		$sql = "UPDATE article SET a_keep_user = '$keepStr',a_keep_count = '$a_keep_count' WHERE a_id = '$a_id'";
+		$this ->db ->query($sql);
+	}
+	// 判断该用户是否已经收藏过该新闻
+	public function judgeNewsIsKeep($a_id){
+		$query = $this ->db ->query("SELECT * FROM article WHERE a_id = '$a_id' LIMIT 1");
+		return $query ->row_array();
+	}
+	// 做多的五条收藏的新闻
+	public function selectHotKeep(){
+		$mes_data = $this ->db ->query("SELECT * FROM article ORDER BY a_keep_count DESC LIMIT 9");
+		return $mes_data->result();
+	}
+	// 自己收藏的新闻
+	public function selectMyKeep($u_account){
+		$mes_data = $this ->db ->query("SELECT * FROM 
+			article WHERE 
+			a_keep_count > 0 ORDER BY a_time DESC");
+		$keep = $mes_data->result();
+		$return = array();
+		foreach ($keep as $row) {
+			$strLen = strpos($row->a_keep_user, $u_account);
+			if ( is_numeric($strLen) ) {
+				array_push($return, $row);
+			}
+		}
+		return $return;
+	}
+	// 反馈内容保存
+	public function addFeedback($data){
+		$this ->db ->insert('feedback', $data);
 	}
 }
 ?>

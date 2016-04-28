@@ -58,14 +58,17 @@ class Login extends CI_Controller {
     	$all_mes = $this ->m_news ->selectNewsList($num, ($offset && $offset >= 0 ? $offset : 0));
 	    $this ->pagination ->initialize($config);
 	    // 热门新闻 浏览量最多的五条新闻
-	    // 热门收藏 被收藏最多的五条标签
 	    $hotNews = $this ->m_news ->selectHotNews();
+	    // 热门收藏 被收藏最多的五条标签
+	    $hotKeep = $this ->m_news ->selectHotKeep();
+	    // var_dump($hotKeep);
 	    $session_data = $this ->session ->userdata("admin");
 	    $v_data = array(
 	    	"page"	  =>$this ->pagination ->create_links(),// 页码
 	    	"all_news"=>$all_mes, // 所有的新闻
-	    	"hotNews" =>$hotNews,
-	    	"session" =>$session_data
+	    	"hotNews" =>$hotNews, // 热点新闻
+	    	"session" =>$session_data, // 登录信息
+	    	"hotKeep" =>$hotKeep //热门收藏
 	    );
 	    $this ->load ->view('header');
 	    if ( !empty($session_data) ) {
@@ -74,6 +77,7 @@ class Login extends CI_Controller {
 			$this ->load ->view('login/v_login');
 	    }
 		$this ->load ->view('v_index', $v_data);
+		$this ->load ->view('manage/v_edit', $v_data);
 		$this ->load ->view('footer');
 	}
 	// 注销登录
@@ -265,7 +269,6 @@ class Login extends CI_Controller {
 	 * 用户头像点击进来的 个人页面(该用户可能没有登录)  通过用户账号而不是id
 	 */
 	public function personShow($userAccount){
-		$this->load->library('pagination');
 		if ( !isset($userAccount) ) {
 			$userAccount = $this ->uri ->segment(3);// 类似从get参数里面获取
 		}
@@ -303,12 +306,15 @@ class Login extends CI_Controller {
 						}
 					}
 				}
+				$myKeep = $this ->m_news ->selectMyKeep( $session_data["u_account"] );
+
 				$v_data = array(
 					"session" =>$saveSession, // 是否登录
 					"user"    =>$userMsg,
 					"isSameUser" =>$isSameUser,
 					"fabuMsg" =>$fabuMsg, //自己发布的信息
-					"pinglunMsg" =>$pinglunArr
+					"pinglunMsg" =>$pinglunArr, //评论的
+					"keepMsg" =>$myKeep //自己收藏的东西
 				);
 			}else{
 				$v_data = array(
@@ -321,6 +327,7 @@ class Login extends CI_Controller {
 			$this ->load ->view('header');
 			$this ->load ->view('manage/v_mhead', $v_data);
 			$this ->load ->view('manage/v_manage', $v_data);
+			$this ->load ->view('manage/v_edit', $v_data);
 			$this ->load ->view('footer');
 		}else{
         	redirect('/');
