@@ -246,4 +246,28 @@ class Manage extends CI_Controller {
 		$this ->m_news ->addFeedback( $data );
         redirect('/');
 	}
+	/* 搜索结果展示
+	 */
+	public function searchShow(){
+		$this ->load ->library("form_validation");
+		$this ->form_validation ->set_rules("keySearch","keySearch","required");
+		$keySearch = $this ->security ->xss_clean( $this->input->post("keySearch") );//从内容搜索
+
+		$keySearchList = $this ->m_news ->selectKeyWordNews($keySearch);
+	    $session_data = $this ->session ->userdata("admin");
+	    $v_data = array(
+	    	"search_list"=>$keySearchList, // 所有的新闻
+	    	"session" =>$session_data // 登录信息
+	    );
+
+	    $this ->load ->view('header');
+	    if ( !empty($session_data) ) {
+			$this ->load ->view('manage/v_mhead', $v_data);
+	    }else{
+			$this ->load ->view('login/v_login');
+	    }
+		$this ->load ->view('v_index', $v_data);
+		$this ->load ->view('manage/v_edit', $v_data);
+		$this ->load ->view('footer');
+	}
 }

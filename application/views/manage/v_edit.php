@@ -13,7 +13,8 @@
 .edit-news-main{
 	width: 600px;
 	height: 600px;
-	position: fixed;
+	position: absolute;
+	z-index: 999;
 	background: #fff;border-radius: 4px;
 	top:20px;left: 50%;margin-left: -300px;
 }
@@ -40,6 +41,7 @@
 	position: absolute;
 	width: 97%;
     color: #fff;
+    z-index: 10000;
 }
 .news-label-return-list ul{ width: 97%;height: 100%; }
 .news-label-return-list li{
@@ -97,13 +99,6 @@
 	        <div class="news-editor-title">
 	        	<input type="text" name="newsTitle" id="newsTitle" placeholder="新闻标题" value="<?php echo $name; ?>" />
 	        </div>
-	        <script type="text/plain" id="newsContainEdit" name="newsContainEdit">
-	            <?php if ( isset($news_contain) ) {
-	            	echo $news_contain["a_content"];
-	            }else{ ?>
-	            	<p>这是新闻具体内容</p>
-	            <?php } ?>
-	        </script>
 	        <div class="news-editor-title">
 	        	<input type="text" name="newsLabel" id="newsLabel" placeholder="新闻标签" value="<?php echo $label ?>" />
 	        	<div class="news-label-return-list">
@@ -111,6 +106,14 @@
 	        		</ul>
 	        	</div>
 	        </div>
+	        <script type="text/plain" id="newsContainEdit" name="newsContainEdit">
+	            <?php if ( isset($news_contain) ) {
+	            	echo $news_contain["a_content"];
+	            }else{ ?>
+	            	<p>这是新闻具体内容</p>
+	            <?php } ?>
+	        </script>
+	        
 	        <div class="edit-contain-btn">
 	        	<button type="submit">提交</button>
 	        	<button type="reset" class="reset-btn">取消</button>

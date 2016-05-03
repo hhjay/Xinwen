@@ -61,5 +61,3 @@ p.footer {
 .hide{
 	display: none !important;visibility: hidden !important;
 }
-/*编辑器的高度 会影响*/
-#edui1_iframeholder{ overflow: auto !important;height: 250px !important; }

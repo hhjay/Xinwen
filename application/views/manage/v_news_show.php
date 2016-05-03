@@ -16,7 +16,7 @@
 		<div class="news-comment comment-form">
 			<h2>我来说两句 (<span><?php echo count($comment) ?></span>人参与)</h2>
 			<!-- 评论区 -->
-			<?php if ( isset($session) ) { ?>
+			<?php if ( !isset($session) ) { ?>
 			<?php 
 				$u_head = $session["u_head"];
 				if ( !$u_head ) {
@@ -114,7 +114,8 @@
 	$(document).ready(function() {
 		// 评论框的
 		$("#commentContain").focus(function(event) {
-			$(this).val("");$(this).removeClass('no-focus');
+			$(this).val("");
+			$(this).removeClass('no-focus');
 		});
 		$("#commentContain").blur(function(event) {
 			$(this).addClass('no-focus');

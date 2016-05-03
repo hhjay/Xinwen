@@ -34,6 +34,11 @@
 						array_push($all, $row);
 					}
 				}
+				if ( isset($search_list) ) {// 分类的列表
+					foreach ($search_list as $row) {
+						array_push($all, $row);
+					}
+				}
 				if ( isset($all_news) ) {// 所有文章的列表
 					foreach ($all_news as $row) {
 						array_push($all, $row);
@@ -121,13 +126,13 @@
 			</div>
 			<?php } ?>
 
-			<?php if ( !isset($fenlei_news) ) { ?>
+			<?php if ( !isset($fenlei_news) && !isset($search_list) ) { ?>
 			<div class="news-page">
 				<?php echo $page; ?>
 			</div>
 			<?php } ?>
 		</div>
-		<?php if ( !isset($fenlei_news) ) {//有分类的时候就不显示右边的热门那些东西 ?>
+		<?php if ( !isset($fenlei_news) && !isset($search_list) ) {//有分类的时候就不显示右边的热门那些东西 ?>
 		<div class="label-main pull-right">
 			<div class="pv-list pull-right">
 				<!-- 前十个 浏览量 -->

@@ -31,7 +31,7 @@
 		};
 	});
 	$("#feedbackButton").click(function(event) {
-		event.preventDefault();
+		// event.preventDefault();
 		$(".feedback-box").removeClass('hide');
 	});
 	$("#feedbackReset").click(function(event) {

@@ -81,6 +81,31 @@ class M_news extends CI_Model {
 		}
 		return $res;
 	}
+	// 关键字搜索
+	public function selectKeyWordNews($key){
+		$sql = "SELECT * FROM article WHERE a_content LIKE '%$key%' ORDER BY a_time";
+		$res = array();
+		$fenlei = $this ->db ->query( $sql );
+		$fenlei = $fenlei ->result();
+		foreach ($fenlei as $row) {
+			$u_id = $row ->a_author_id;
+
+			$sql = "SELECT * FROM user WHERE u_id = '$u_id' LIMIT 1";
+			$query = $this ->db ->query($sql);
+			$u_name_q = $query ->row_array();
+			
+			$newsId = $row ->a_id;
+			// 找到评论人数
+			$pinglun = $this ->db ->query("SELECT c_user_account FROM comment WHERE c_news_id = '$newsId'");
+
+			$row ->u_name = $u_name_q["u_name"];
+			$row ->u_head = $u_name_q["u_head"];
+			$row ->pinglun = $pinglun ->result();
+			$row->u_account = $u_name_q["u_account"];
+			array_push($res, $row);
+		}
+		return $res;
+	}
 	// 拉取出新闻内容 该新闻对应的相关新闻 及该新闻的pv
 	public function selectNewsContain($newsId){
 		$mes_data = $this ->db ->query("SELECT * FROM article WHERE a_id = '$newsId' LIMIT 1");

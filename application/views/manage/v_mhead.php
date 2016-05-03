@@ -6,7 +6,7 @@
 		<div class="manage-logo pull-left">新闻</div>
 		<div class="manage-search pull-left">
 			<!-- 这里是搜索框 -->
-			<form  method="post" name="keyWordSearch">
+			<form  method="post" name="keyWordSearch" action="<?php echo base_url().'index.php/manage/searchShow' ?>">
 				<input type="text" name="keySearch" id="keySearch" class="key-input" placeholder="搜索你感兴趣的新闻" required />
 				<button class="btn-submit" id="loginBtn"><i class="fa fa-search"></i></button>
 			</form>
@@ -23,6 +23,12 @@
 			// 分类页面
 			if ( isset($fenlei_news) ) {// 分类的列表
 				foreach ($fenlei_news as $row) {
+					array_push($all, $row ->a_id);
+				}
+			}
+			// 分类页面
+			if ( isset($search_list) ) {// 分类的列表
+				foreach ($search_list as $row) {
 					array_push($all, $row ->a_id);
 				}
 			}
